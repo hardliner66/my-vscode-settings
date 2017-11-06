@@ -1,0 +1,67 @@
+// Place your key bindings in this file to overwrite the defaults
+[
+    {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.terminal.focusNext"
+    },
+    {
+        "key": "ctrl+oem_3",
+        "command": "workbench.action.terminal.focus"
+    },
+    {
+        "key": "ctrl+alt+oem_3",
+        "command": "workbench.action.terminal.new"
+    },
+    {
+        "key": "ctrl+shift+oem_3",
+        "command": "-workbench.action.terminal.new"
+    },
+    {
+        "key": "ctrl+shift+oem_3",
+        "command": "workbench.action.terminal.toggleTerminal"
+    },
+    {
+        "key": "ctrl+oem_3",
+        "command": "-workbench.action.terminal.toggleTerminal"
+    },
+    {
+        "key": "ctrl+alt+a",
+        "command": "idris.add-clause"
+    },
+    {
+        "key": "ctrl+alt+c",
+        "command": "idris.case-split"
+    },
+    {
+        "key": "ctrl+alt+r",
+        "command": "idris.typecheck"
+    },
+    {
+        "key": "ctrl+alt+s",
+        "command": "idris.proof-search"
+    },
+    {
+        "key": "ctrl+alt+t",
+        "command": "idris.type-of"
+    },
+    {
+        "key": "ctrl+alt+d",
+        "command": "idris.docs-for"
+    },
+    {
+        "key": "ctrl+alt+m",
+        "command": "idris.make-with"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "idris.make-lemma"
+    },
+    {
+        "key": "ctrl+alt+enter",
+        "command": "idris.start-refresh-repl"
+    },
+    {
+        "key": "ctrl+enter",
+        "command": "idris.send-selection-repl"
+    }
+]
