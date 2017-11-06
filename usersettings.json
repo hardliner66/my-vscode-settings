@@ -1,0 +1,44 @@
+{
+    "editor.fontFamily": "Fira Code",
+    "editor.fontSize": 14,
+    "editor.fontLigatures": true,
+    "workbench.colorTheme": "Monokai",
+    "git.ignoreLegacyWarning": true,
+    "haskell.ghcMod.executablePath": "stack",
+    "haskell.ghcMod.check": "onSave",
+    "haskell.ghcMod.onHover": "fallback",
+    "zenMode.fullScreen": true,
+    "zenMode.hideActivityBar": true,
+    "zenMode.hideStatusBar": true,
+    "zenMode.hideTabs": true,
+    "zenMode.restore": false,
+    "editor.renderWhitespace": "boundary",
+    "editor.formatOnSave": true,
+    "workbench.sideBar.location": "right",
+    "workbench.editor.closeOnFileDelete": false,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.hotExit": "off",
+    "debug.inlineValues": false,
+    "telemetry.enableTelemetry": false,
+    "files.autoGuessEncoding": true,
+    "files.encoding": "utf8",
+    "window.openFilesInNewWindow": "on",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/*.olean": true
+    },
+    "files.associations": {
+        "*.cdl": "swift"
+    },
+    "freezeZoom.level": 1,
+    "window.zoomLevel": 1,
+    "importCost.showCalculatingDecoration": true,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    }
+}
