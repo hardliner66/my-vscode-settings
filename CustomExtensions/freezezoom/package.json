@@ -30,6 +30,14 @@
             {
                 "command": "extension.restoreZoom",
                 "title": "Restore Zoom"
+            },
+            {
+                "command": "extension.temporaryDisableFreezeZoom",
+                "title": "Temporary Disable Freeze Zoom"
+            },
+            {
+                "command": "extension.reenableFreezeZoom",
+                "title": "Reenable Freeze Zoom"
             }
         ]
     },
