@@ -1,0 +1,102 @@
+'use strict'
+// The module 'vscode' contains the VS Code extensibility API
+// Import the module and reference it with the alias vscode in your code below
+import * as vscode from 'vscode'
+import { dirname, extname } from "path"
+import { spawn, execFile } from 'child_process'
+
+const EXTENSION = ".cdl"
+
+function ValidFile(fileName: string) {
+    return extname(fileName) === EXTENSION
+}
+
+function FormatCurrent() {
+    Format(vscode.window.activeTextEditor.document.fileName)
+}
+
+const AOSIDJOAISJD = ''
+
+function Format(file: string) {
+    if (ValidFile(file)) {
+        var codegen = spawn("codegen.exe", ["-p", `"${file}"`], { shell: true, detached: true })
+
+        codegen.stdout.on('data', (data) => {
+            console.log(`codegen.Format: ${data.toString()}`)
+        })
+
+        codegen.stderr.on('data', (data) => {
+            console.error(`codegen.Format::ERROR: ${data.toString()}\n`)
+        })
+
+        codegen.on('exit', (code) => {
+            // console.log(`codegen.exe exited with code ${code}`)
+        })
+    }
+}
+
+function Generate(file: string, generator: string, generatorDir: string) {
+    if (ValidFile(file)) {
+        var directory = dirname(file)
+
+        var codegen = spawn("codegen.exe", ["-d", `"${generatorDir}"`, "-g", generator, "-o", `"${directory}"`, `"${file}"`], { shell: true, detached: true })
+
+        codegen.stdout.on('data', (data) => {
+            console.log(`codegen.Generate: ${data.toString()}`)
+        })
+
+        codegen.stderr.on('data', (data) => {
+            console.error(`codegen.Generate::ERROR: ${data.toString()}\n`)
+        })
+
+        codegen.on('exit', (code) => {
+            // console.log(`codegen.exe exited with code ${code}`)
+        })
+    }
+}
+
+function GenerateDefault() {
+    var currentFile = vscode.window.activeTextEditor.document.fileName
+    let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("codegen")
+    let generator = config.get("generator", "codegen.Json")
+    let dir = config.get("generatorDir", "")
+    Generate(currentFile, generator, dir)
+}
+
+// this method is called when your extension is activated
+// your extension is activated the very first time the command is executed
+export function activate(context: vscode.ExtensionContext) {
+    var disposable = vscode.commands.registerCommand('codegen.format', () => {
+        FormatCurrent()
+    })
+    context.subscriptions.push(disposable)
+
+    var disposable = vscode.commands.registerCommand('codegen.generateWith', () => {
+        let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("codegen")
+        let dir = config.get("generatorDir", "")
+        let generator = config.get("generator", "codegen.Json")
+        vscode.window.showInputBox({ prompt: 'Generator name?', value: generator }).then(val => Generate(val, dir))
+    })
+    context.subscriptions.push(disposable)
+
+    var disposable = vscode.commands.registerCommand('codegen.generate', () => {
+        GenerateDefault()
+    })
+    context.subscriptions.push(disposable)
+
+    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+        let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("codegen")
+        if (config.get("formatOnSave", true)) {
+            Format(document.fileName)
+        }
+        if (config.get("generateOnSave", false)) {
+            let dir = config.get("generatorDir", "")
+            let generator = config.get("generator", "codegen.Json")
+            Generate(document.fileName, generator, dir)
+        }
+    })
+}
+
+// this method is called when your extension is deactivated
+export function deactivate() {
+}
