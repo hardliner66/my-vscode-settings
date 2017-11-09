@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
 import { dirname, extname } from "path"
-import { spawn, execFile } from 'child_process'
+import { spawn, ChildProcess } from 'child_process'
 
 const EXTENSION = ".cdl"
 
@@ -17,42 +17,52 @@ function FormatCurrent() {
 
 const AOSIDJOAISJD = ''
 
-function Format(file: string) {
-    if (ValidFile(file)) {
-        var codegen = spawn("codegen.exe", ["-p", `"${file}"`], { shell: true, detached: true })
+function Format(file: string): Promise<void> {
 
-        codegen.stdout.on('data', (data) => {
-            console.log(`codegen.Format: ${data.toString()}`)
-        })
+    return new Promise((resolve) => {
+        if (ValidFile(file)) {
+            var codegen = spawn("codegen.exe", ["-p", `"${file}"`], { shell: true, detached: true })
 
-        codegen.stderr.on('data', (data) => {
-            console.error(`codegen.Format::ERROR: ${data.toString()}\n`)
-        })
+            codegen.stdout.on('data', (data) => {
+                console.log(`codegen.Format: ${data.toString()}`)
+            })
 
-        codegen.on('exit', (code) => {
-            // console.log(`codegen.exe exited with code ${code}`)
-        })
-    }
+            codegen.stderr.on('data', (data) => {
+                console.error(`codegen.Format::ERROR: ${data.toString()}\n`)
+            })
+
+            codegen.on('exit', (code) => {
+                resolve();
+            });
+        } else {
+            resolve();
+        }
+    })
 }
 
-function Generate(file: string, generator: string, generatorDir: string) {
-    if (ValidFile(file)) {
-        var directory = dirname(file)
+function Generate(file: string, generator: string, generatorDir: string): Promise<void> {
 
-        var codegen = spawn("codegen.exe", ["-d", `"${generatorDir}"`, "-g", generator, "-o", `"${directory}"`, `"${file}"`], { shell: true, detached: true })
+    return new Promise((resolve) => {
+        if (ValidFile(file)) {
+            var directory = dirname(file)
 
-        codegen.stdout.on('data', (data) => {
-            console.log(`codegen.Generate: ${data.toString()}`)
-        })
+            var codegen = spawn("codegen.exe", ["-d", `"${generatorDir}"`, "-g", generator, "-o", `"${directory}"`, `"${file}"`], { shell: true, detached: true })
 
-        codegen.stderr.on('data', (data) => {
-            console.error(`codegen.Generate::ERROR: ${data.toString()}\n`)
-        })
+            codegen.stdout.on('data', (data) => {
+                console.log(`codegen.Generate: ${data.toString()}`)
+            })
 
-        codegen.on('exit', (code) => {
-            // console.log(`codegen.exe exited with code ${code}`)
-        })
-    }
+            codegen.stderr.on('data', (data) => {
+                console.error(`codegen.Generate::ERROR: ${data.toString()}\n`)
+            })
+
+            codegen.on('exit', (code) => {
+                resolve();
+            });
+        } else {
+            resolve();
+        }
+    })
 }
 
 function GenerateDefault() {
@@ -75,7 +85,8 @@ export function activate(context: vscode.ExtensionContext) {
         let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("codegen")
         let dir = config.get("generatorDir", "")
         let generator = config.get("generator", "codegen.Json")
-        vscode.window.showInputBox({ prompt: 'Generator name?', value: generator }).then(val => Generate(val, dir))
+        var currentFile = vscode.window.activeTextEditor.document.fileName
+        vscode.window.showInputBox({ prompt: 'Generator name?', value: generator }).then(val => Generate(currentFile, val, dir))
     })
     context.subscriptions.push(disposable)
 
@@ -87,12 +98,19 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
         let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("codegen")
         if (config.get("formatOnSave", true)) {
-            Format(document.fileName)
-        }
-        if (config.get("generateOnSave", false)) {
-            let dir = config.get("generatorDir", "")
-            let generator = config.get("generator", "codegen.Json")
-            Generate(document.fileName, generator, dir)
+            Format(document.fileName).then(() => {
+                if (config.get("generateOnSave", false)) {
+                    let dir = config.get("generatorDir", "")
+                    let generator = config.get("generator", "codegen.Json")
+                    Generate(document.fileName, generator, dir)
+                }
+            })
+        } else {
+            if (config.get("generateOnSave", false)) {
+                let dir = config.get("generatorDir", "")
+                let generator = config.get("generator", "codegen.Json")
+                Generate(document.fileName, generator, dir)
+            }
         }
     })
 }
